@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matthew Burke</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Overpass+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f5f0;
+      --bg2: #efede7;
+      --text: #1a1916;
+      --muted: #8a8880;
+      --border: #d9d6ce;
+      --accent: #2d5a3d;
+      --accent-light: #e8f0eb;
+      --mono: 'Overpass Mono', monospace;
+      --serif: 'Fraunces', Georgia, serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      font-weight: 300;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 780px; margin: 0 auto; padding: 0 2rem; }
+
+    header { padding: 3.5rem 0 0; border-bottom: 1px solid var(--border); }
+    .header-inner {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      padding-bottom: 2rem; gap: 2rem;
+    }
+    .header-name h1 {
+      font-family: var(--serif); font-size: clamp(2.6rem, 6vw, 4rem);
+      font-weight: 300; line-height: 1; letter-spacing: -0.02em;
+    }
+    .header-name h1 em { font-style: italic; color: var(--accent); }
+    .header-title { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.6rem; }
+    .header-links { display: flex; gap: 1.5rem; flex-shrink: 0; padding-bottom: 0.25rem; }
+    .header-links a {
+      font-size: 0.7rem; color: var(--muted); text-decoration: none;
+      letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.15s;
+    }
+    .header-links a:hover { color: var(--accent); }
+    .header-links a::after { content: ' ↗'; font-size: 0.6rem; }
+    .nav-tabs { display: flex; border-top: 1px solid var(--border); }
+    .nav-tab {
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 300;
+      color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.75rem 1.25rem; border-right: 1px solid var(--border);
+      transition: color 0.15s, background 0.15s;
+      cursor: pointer; background: none; border-top: none; border-bottom: none; border-left: none;
+    }
+    .nav-tab:hover { color: var(--text); background: var(--bg2); }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--border);
+      opacity: 0; transform: translateY(12px);
+      animation: fadeUp 0.5s forwards;
+    }
+    .accordion-item:nth-child(1) { animation-delay: 0.05s; }
+    .accordion-item:nth-child(2) { animation-delay: 0.1s; }
+    .accordion-item:nth-child(3) { animation-delay: 0.15s; }
+    .accordion-item:nth-child(4) { animation-delay: 0.2s; }
+    .accordion-item:nth-child(5) { animation-delay: 0.25s; }
+    .accordion-item:nth-child(6) { animation-delay: 0.3s; }
+    .accordion-trigger {
+      width: 100%; background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.6rem 0; text-align: left; gap: 1rem;
+    }
+    .accordion-trigger:hover .trigger-label { color: var(--accent); }
+    .trigger-left { display: flex; align-items: baseline; gap: 1.25rem; }
+    .trigger-num { font-size: 0.62rem; color: var(--border); letter-spacing: 0.05em; flex-shrink: 0; }
+    .trigger-label { font-family: var(--serif); font-size: 1.3rem; font-weight: 300; transition: color 0.15s; }
+    .trigger-desc { font-size: 0.72rem; color: var(--muted); margin-left: auto; padding-right: 1.5rem; }
+    .trigger-icon { font-size: 0.9rem; color: var(--muted); transition: transform 0.25s; flex-shrink: 0; }
+    .accordion-item.open .trigger-icon { transform: rotate(45deg); }
+    .accordion-body { display: none; padding: 0 0 2rem 2.75rem; }
+    .accordion-item.open .accordion-body { display: block; }
+
+    .about-text { font-size: 0.88rem; color: var(--muted); line-height: 1.9; max-width: 560px; }
+    .about-text p + p { margin-top: 0.85rem; }
+
+    .project-card { padding: 1.25rem 0; border-top: 1px solid var(--border); }
+    .project-card:first-child { border-top: none; padding-top: 0; }
+    .project-header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.5rem; }
+    .project-name { font-family: var(--serif); font-size: 1.05rem; font-weight: 300; }
+    .project-link { font-size: 0.65rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.15s; flex-shrink: 0; }
+    .project-link:hover { color: var(--accent); }
+    .project-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.8; margin-bottom: 0.85rem; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag { font-size: 0.62rem; color: var(--muted); border: 1px solid var(--border); padding: 0.15rem 0.5rem; background: var(--bg2); }
+
+    .exp-item { padding: 1.25rem 0; border-top: 1px solid var(--border); }
+    .exp-item:first-child { border-top: none; padding-top: 0; }
+    .exp-header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.3rem; }
+    .exp-role { font-family: var(--serif); font-size: 1.05rem; font-weight: 300; }
+    .exp-period { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; flex-shrink: 0; }
+    .exp-company { font-size: 0.72rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .exp-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.8; }
+    .exp-badge { display: inline-block; font-size: 0.62rem; color: var(--accent); background: var(--accent-light); border: 1px solid #b8d4c0; padding: 0.15rem 0.5rem; margin-top: 0.6rem; }
+
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2.5rem; }
+    .skill-group-label { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.6rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+    .skill-list { display: flex; flex-direction: column; gap: 0.3rem; }
+    .skill-list span { font-size: 0.82rem; color: var(--text); }
+
+    .esports-stat-row { display: flex; gap: 2rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .esports-stat { display: flex; flex-direction: column; }
+    .esports-stat-val { font-family: var(--serif); font-size: 1.6rem; font-weight: 300; color: var(--accent); line-height: 1; }
+    .esports-stat-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 0.2rem; }
+    .esports-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.8; max-width: 520px; }
+
+    .contact-body { font-size: 0.85rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.25rem; }
+    .contact-links { display: flex; flex-direction: column; gap: 0.5rem; }
+    .contact-link { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text); text-decoration: none; transition: color 0.15s; }
+    .contact-link:hover { color: var(--accent); }
+    .contact-link::after { content: ' ↗'; font-size: 0.65rem; color: var(--muted); }
+
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 0; margin-top: 1rem; }
+    footer p { font-size: 0.65rem; color: var(--border); letter-spacing: 0.06em; }
+
+    @keyframes fadeUp { to { opacity: 1; transform: none; } }
+
+    @media (max-width: 600px) {
+      .header-inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .trigger-desc { display: none; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .accordion-body { padding-left: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+      <div class="header-name">
+        <h1>Matthew <em>Burke</em></h1>
+        <p class="header-title">BSc/MSc Immersive Software Engineering · University of Limerick</p>
+      </div>
+      <nav class="header-links">
+        <a href="https://github.com/matthewb62" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/matthew-burke-9b533336b/" target="_blank">LinkedIn</a>
+        <a href="mailto:matthewburke.dev@gmail.com">Email</a>
+      </nav>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab" onclick="openSection('about')">About</button>
+      <button class="nav-tab" onclick="openSection('projects')">Projects</button>
+      <button class="nav-tab" onclick="openSection('experience')">Experience</button>
+      <button class="nav-tab" onclick="openSection('skills')">Skills</button>
+      <button class="nav-tab" onclick="openSection('esports')">Esports</button>
+      <button class="nav-tab" onclick="openSection('contact')">Contact</button>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="accordion-item" id="about">
+      <button class="accordion-trigger" onclick="toggle('about')">
+        <div class="trigger-left">
+          <span class="trigger-num">01</span>
+          <span class="trigger-label">About</span>
+        </div>
+        <span class="trigger-desc">Second year, 2024-2028</span>
+        <span class="trigger-icon">+</span>
+      </button>
+      <div class="accordion-body">
+        <div class="about-text">
+          <p>Second year software engineering student at the University of Limerick with a focus on data automation and software development. I have had two internships alongside college and have been working on personal projects in parallel. I also achieved 625 points in my Leaving Cert, including 100% in Higher Level Maths.</p>
+          <p>Outside of college I enjoy the gym, travelling, F1, learning languages, and music. Before starting college I competed professionally in Fortnite for a couple of years.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item" id="projects">
+      <button class="accordion-trigger" onclick="toggle('projects')">
+        <div class="trigger-left">
+          <span class="trigger-num">02</span>
+          <span class="trigger-label">Projects</span>
+        </div>
+        <span class="trigger-desc">4 projects</span>
+        <span class="trigger-icon">+</span>
+      </button>
+      <div class="accordion-body">
+
+        <div class="project-card">
+          <div class="project-header">
+            <span class="project-name">DETE Automation System</span>
+            <a href="https://github.com/matthewb62" class="project-link" target="_blank">GitHub ↗</a>
+          </div>
+          <p class="project-desc">During my internship at the Department of Enterprise, a significant amount of time was being spent on manual data processing that didn't need to be. I built a Python automation system that pulls data from around 100 CSO and ONS API endpoints and populates Tableau dashboards directly, cutting manual processing time by 97% (from 15+ hours to under 30 minutes weekly). The system is modular, handles the full pipeline from API calls through to data transformation, and is actively in production. I also built R-based geographic visualisations including circle-packing algorithms and treemap charts for Irish business sector analysis.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">R</span><span class="tag">JSON-stat</span><span class="tag">Tableau</span><span class="tag">Automation</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header">
+            <span class="project-name">Multi-Source Data Aggregation System</span>
+            <a href="https://github.com/matthewb62" class="project-link" target="_blank">GitHub ↗</a>
+          </div>
+          <p class="project-desc">An end-to-end data collection and monitoring platform built with two teammates. It pulls from multiple sources including PC telemetry, Android devices, and third-party APIs, aggregates everything through a queue-based pipeline, and surfaces it through a React frontend. I was responsible for the entire backend, built with FastAPI, PostgreSQL, and Redis in a containerised architecture.</p>
+          <div class="project-tags">
+            <span class="tag">FastAPI</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">React</span><span class="tag">Docker</span><span class="tag">Kotlin</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header">
+            <span class="project-name">Internship Allocation Platform</span>
+            <a href="https://github.com/matthewb62/residency-app" class="project-link" target="_blank">GitHub ↗</a>
+          </div>
+          <p class="project-desc">A full-stack web application for matching students with internship placements, with separate portals for students, companies, and administrators. I led the database design and implemented the preference-based matching algorithm. Built with React, Spring Boot, and Supabase.</p>
+          <div class="project-tags">
+            <span class="tag">React</span><span class="tag">Spring Boot</span><span class="tag">Supabase</span><span class="tag">JavaScript</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header">
+            <span class="project-name">Body Scanner App</span>
+            <span style="font-size:0.65rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;">In Development</span>
+          </div>
+          <p class="project-desc">A physique analysis app I started after noticing how common it is in online gym communities for people to critique each other's physiques, pointing out muscle groups that are underdeveloped. Not everyone wants that kind of public feedback, but they might actually listen to an app. The current version uses Python's MediaPipe library to score each muscle group based on size out of 100. Accuracy is still a work in progress but the core concept is working and it is the project I am most focused on right now.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">MediaPipe</span><span class="tag">Computer Vision</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="accordion-item" id="experience">
+      <button class="accordion-trigger" onclick="toggle('experience')">
+        <div class="trigger-left">
+          <span class="trigger-num">03</span>
+          <span class="trigger-label">Experience</span>
+        </div>
+        <span class="trigger-desc">DETE · CRIS</span>
+        <span class="trigger-icon">+</span>
+      </button>
+      <div class="accordion-body">
+
+        <div class="exp-item">
+          <div class="exp-header">
+            <span class="exp-role">Software Development Intern</span>
+            <span class="exp-period">Sep 2025 – Dec 2025</span>
+          </div>
+          <div class="exp-company">Department of Enterprise, Trade and Employment</div>
+          <p class="exp-desc">Built Python automation systems that extract data from around 100 CSO and UK ONS API endpoints to populate Tableau dashboards, reducing manual processing time by 97% (from 15+ hours to under 30 minutes weekly). Built a modular architecture with core libraries for API integration, data transformation, and Tableau data source generation. Also created R-based geographic visualisations including circle-packing algorithms and treemap charts for Irish business sector analysis.</p>
+          <span class="exp-badge">97% reduction in manual processing time</span>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-header">
+            <span class="exp-role">Research Assistant</span>
+            <span class="exp-period">Jun 2025 – Aug 2025</span>
+          </div>
+          <div class="exp-company">Centre for Robotics and Intelligent Systems, University of Limerick</div>
+          <p class="exp-desc">Supported the integration of advanced sensing technologies through technical research and planning. Developed workflows for data processing and visualisation in specialised software tools, and collaborated with academic staff and industry partners on technology evaluation and project planning.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="accordion-item" id="skills">
+      <button class="accordion-trigger" onclick="toggle('skills')">
+        <div class="trigger-left">
+          <span class="trigger-num">04</span>
+          <span class="trigger-label">Skills</span>
+        </div>
+        <span class="trigger-desc">Languages · Tools · Frameworks</span>
+        <span class="trigger-icon">+</span>
+      </button>
+      <div class="accordion-body">
+        <div class="skills-grid">
+          <div>
+            <div class="skill-group-label">Languages</div>
+            <div class="skill-list">
+              <span>Python</span><span>Kotlin</span><span>Java</span><span>R</span><span>SQL</span><span>JavaScript</span>
+            </div>
+          </div>
+          <div>
+            <div class="skill-group-label">Backend & Data</div>
+            <div class="skill-list">
+              <span>FastAPI</span><span>Spring Boot</span><span>PostgreSQL</span><span>Redis</span><span>Supabase</span><span>REST APIs</span>
+            </div>
+          </div>
+          <div>
+            <div class="skill-group-label">Frontend & Mobile</div>
+            <div class="skill-list">
+              <span>React</span><span>Android Studio</span><span>HTML / CSS</span>
+            </div>
+          </div>
+          <div>
+            <div class="skill-group-label">Tools & Other</div>
+            <div class="skill-list">
+              <span>Docker</span><span>Git / GitHub</span><span>Tableau</span><span>Linux</span><span>Spanish (proficient)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item" id="esports">
+      <button class="accordion-trigger" onclick="toggle('esports')">
+        <div class="trigger-left">
+          <span class="trigger-num">05</span>
+          <span class="trigger-label">Esports</span>
+        </div>
+        <span class="trigger-desc">#1 Ireland · Playwell Esports</span>
+        <span class="trigger-icon">+</span>
+      </button>
+      <div class="accordion-body">
+        <div class="esports-stat-row">
+          <div class="esports-stat">
+            <span class="esports-stat-val">#1</span>
+            <span class="esports-stat-label">Ranked in Ireland</span>
+          </div>
+          <div class="esports-stat">
+            <span class="esports-stat-val">$30k</span>
+            <span class="esports-stat-label">Prize earnings</span>
+          </div>
+          <div class="esports-stat">
+            <span class="esports-stat-val">15k</span>
+            <span class="esports-stat-label">Followers across platforms</span>
+          </div>
+        </div>
+        <p class="esports-desc">Before starting college I competed professionally in Fortnite with Playwell Esports, reaching #1 in Ireland and earning $30,000 in prize money. Competing took me to places I wouldn't have expected, including a Red Bull sponsored tournament in Edinburgh and competitions in Sweden. Working under an organisation with managers and editors taught me a lot about communication and professionalism. The competitive side, especially performing consistently under pressure, is something I carry into everything I do now.</p>
+      </div>
+    </div>
+
+    <div class="accordion-item" id="contact">
+      <button class="accordion-trigger" onclick="toggle('contact')">
+        <div class="trigger-left">
+          <span class="trigger-num">06</span>
+          <span class="trigger-label">Contact</span>
+        </div>
+        <span class="trigger-desc">Get in touch</span>
+        <span class="trigger-icon">+</span>
+      </button>
+      <div class="accordion-body">
+        <p class="contact-body">Open to internships, interesting projects, or just a conversation. Feel free to reach out.</p>
+        <div class="contact-links">
+          <a href="mailto:matthewburke.dev@gmail.com" class="contact-link">matthewburke.dev@gmail.com</a>
+          <a href="https://www.linkedin.com/in/matthew-burke-9b533336b/" class="contact-link" target="_blank">LinkedIn</a>
+          <a href="https://github.com/matthewb62" class="contact-link" target="_blank">GitHub</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>Matthew Burke · 2025</p>
+  </footer>
+
+</div>
+<script>
+  function toggle(id) {
+    const item = document.getElementById(id);
+    item.classList.toggle('open');
+  }
+  function openSection(id) {
+    const item = document.getElementById(id);
+    if (!item.classList.contains('open')) item.classList.add('open');
+    setTimeout(() => item.scrollIntoView({ behavior: 'smooth', block: 'start' }), 10);
+  }
+</script>
+</body>
+</html>
